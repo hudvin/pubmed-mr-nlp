@@ -15,24 +15,24 @@
 
     <fileSets>
         <!--<fileSet>-->
-            <!--&lt;!&ndash; Scripts to be placed in bin/ &ndash;&gt;-->
-            <!--<directory>${project.build.scriptSourceDirectory}</directory>-->
-            <!--<outputDirectory>bin</outputDirectory>-->
-            <!--<filtered>true</filtered>-->
-            <!--<fileMode>0744</fileMode>-->
-            <!--<includes>-->
-                <!--<include>*.sh</include>-->
-            <!--</includes>-->
+        <!--&lt;!&ndash; Scripts to be placed in bin/ &ndash;&gt;-->
+        <!--<directory>${project.build.scriptSourceDirectory}</directory>-->
+        <!--<outputDirectory>bin</outputDirectory>-->
+        <!--<filtered>true</filtered>-->
+        <!--<fileMode>0744</fileMode>-->
+        <!--<includes>-->
+        <!--<include>*.sh</include>-->
+        <!--</includes>-->
         <!--</fileSet>-->
 
         <!--<fileSet>-->
-            <!--&lt;!&ndash; Scripts to be placed in bin/ &ndash;&gt;-->
-            <!--<directory>/opt/hadoop-1.1.2</directory>-->
-            <!--<outputDirectory>hadoop</outputDirectory>-->
-            <!--<includes>-->
-                <!--<include>*/*</include>-->
-                <!--<include>*</include>-->
-            <!--</includes>-->
+        <!--&lt;!&ndash; Scripts to be placed in bin/ &ndash;&gt;-->
+        <!--<directory>/opt/hadoop-1.1.2</directory>-->
+        <!--<outputDirectory>hadoop</outputDirectory>-->
+        <!--<includes>-->
+        <!--<include>*/*</include>-->
+        <!--<include>*</include>-->
+        <!--</includes>-->
         <!--</fileSet>-->
 
     </fileSets>

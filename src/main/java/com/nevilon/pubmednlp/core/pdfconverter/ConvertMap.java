@@ -1,76 +1,53 @@
 package com.nevilon.pubmednlp.core.pdfconverter;
 
-import edu.washington.cs.knowitall.extractor.ReVerbExtractor;
-import edu.washington.cs.knowitall.extractor.conf.ConfidenceFunction;
-import edu.washington.cs.knowitall.extractor.conf.ReVerbOpenNlpConfFunction;
-import edu.washington.cs.knowitall.nlp.ChunkedSentence;
-import edu.washington.cs.knowitall.nlp.OpenNlpSentenceChunker;
-import edu.washington.cs.knowitall.nlp.extraction.ChunkedBinaryExtraction;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.conf.*;
-import org.apache.hadoop.io.DoubleWritable;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.mapreduce.*;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-
-
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.conf.*;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FileUtil;
-import org.apache.hadoop.io.*;
-
-import org.apache.hadoop.mapreduce.*;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileAsBinaryInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.apache.tika.exception.TikaException;
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
+import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.pdf.PDFParser;
-import org.codehaus.jettison.json.JSONArray;
-import org.xml.sax.SAXException;
-
-import java.io.*;
-
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.io.InputStream;
 
-//Mapper <KEYIN, VALUEIN, KEYOUT, VALUEOUT>
-    public  class ConvertMap extends Mapper<NullWritable, BytesWritable, Text, Text>{
+public class ConvertMap extends Mapper<NullWritable, BytesWritable, PdfFile, NullWritable> {
 
-        @Override
-        protected void setup(Context context) throws IOException, InterruptedException {
-            System.out.println("creating");
-        }
+    private String filename;
+
+    private MultipleOutputs mOutput;
 
 
-        //map(KEYIN key, VALUEIN value, org.apache.hadoop.mapreduce.Mapper<KEYIN,VALUEIN,KEYOUT,VALUEOUT>.Context context)
-        public void map(NullWritable key, BytesWritable value, Context context) throws IOException, InterruptedException{
-            String text = parse(value.getBytes());
-            String escapedText =  StringEscapeUtils.escapeJava(text);
-            context.write(new Text(""), new Text(escapedText));
-        }
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+        System.out.println("creating");
+        this.filename = ((FileSplit) context.getInputSplit()).getPath().getName();
+        mOutput = new MultipleOutputs(context);
+    }
 
-    private String parse(byte[] data){
+
+    public void map(NullWritable key, BytesWritable value, Context context) throws IOException, InterruptedException {
+        String text = parse(value.getBytes());
+        //String escapedText = StringEscapeUtils.escapeJava(text);
+        context.write(new PdfFile(filename, text, "some path"), NullWritable.get());
+       // mOutput.write(filename,new PdfFile(filename, text, "some path"), NullWritable.get());
+    }
+
+
+    @Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+        super.cleanup(context);
+        mOutput.close();
+    }
+
+    private String parse(byte[] data) {
         InputStream is = null;
         String text = "";
         try {
@@ -85,7 +62,7 @@ import java.util.List;
             if (is != null) {
                 try {
                     is.close();
-                } catch(IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -93,4 +70,4 @@ import java.util.List;
         return text;
     }
 
-    }
+}

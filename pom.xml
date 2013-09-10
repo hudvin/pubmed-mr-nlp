@@ -7,13 +7,12 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>myreceipts_aggregator</name>
+    <name>pubmed processor</name>
     <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
 
 
     <build>
@@ -90,7 +89,7 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
-            <version> 2.0.0-cdh4.4.0</version>
+            <version>2.0.0-cdh4.4.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -111,6 +110,13 @@
             <artifactId>reverb-core</artifactId>
             <version>1.4.1</version>
         </dependency>
+
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.2.4</version>
+      <scope>compile</scope>
+    </dependency>
 
     </dependencies>
 

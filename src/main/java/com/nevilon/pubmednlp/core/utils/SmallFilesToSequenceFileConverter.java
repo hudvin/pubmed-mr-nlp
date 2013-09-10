@@ -1,5 +1,4 @@
 package com.nevilon.pubmednlp.core.utils;// cc SmallFilesToSequenceFileConverter A MapReduce program for packaging a collection of small files as a single SequenceFile
-import java.io.IOException;
 
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -14,49 +13,51 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
+import java.io.IOException;
+
 public class SmallFilesToSequenceFileConverter extends Configured
-    implements Tool {
+        implements Tool {
 
-  static class SequenceFileMapper
-      extends Mapper<NullWritable, BytesWritable, Text, BytesWritable> {
+    static class SequenceFileMapper
+            extends Mapper<NullWritable, BytesWritable, Text, BytesWritable> {
 
-    private Text filenameKey;
+        private Text filenameKey;
 
-    @Override
-    protected void setup(Context context) throws IOException,
-        InterruptedException {
-      InputSplit split = context.getInputSplit();
-      Path path = ((FileSplit) split).getPath();
-      filenameKey = new Text(path.toString());
-    }
-
-    @Override
-    protected void map(NullWritable key, BytesWritable value, Context context)
-        throws IOException, InterruptedException {
-      context.write(filenameKey, value);
-    }
-
-  }
-
-  public int run(String[] args) throws Exception {
-        Job job = JobBuilder.parseInputAndOutput(this, getConf(), args);
-        if (job == null) {
-          return -1;
+        @Override
+        protected void setup(Context context) throws IOException,
+                InterruptedException {
+            InputSplit split = context.getInputSplit();
+            Path path = ((FileSplit) split).getPath();
+            filenameKey = new Text(path.toString());
         }
 
-    job.setInputFormatClass(WholeFileInputFormat.class);
-    job.setOutputFormatClass(SequenceFileOutputFormat.class);
+        @Override
+        protected void map(NullWritable key, BytesWritable value, Context context)
+                throws IOException, InterruptedException {
+            context.write(filenameKey, value);
+        }
 
-    job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(BytesWritable.class);
+    }
 
-    job.setMapperClass(SequenceFileMapper.class);
+    public int run(String[] args) throws Exception {
+        Job job = JobBuilder.parseInputAndOutput(this, getConf(), args);
+        if (job == null) {
+            return -1;
+        }
 
-    return job.waitForCompletion(true) ? 0 : 1;
-  }
+        job.setInputFormatClass(WholeFileInputFormat.class);
+        job.setOutputFormatClass(SequenceFileOutputFormat.class);
 
-  public static void main(String[] args) throws Exception {
-    int exitCode = ToolRunner.run(new SmallFilesToSequenceFileConverter(), args);
-    System.exit(exitCode);
-  }
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(BytesWritable.class);
+
+        job.setMapperClass(SequenceFileMapper.class);
+
+        return job.waitForCompletion(true) ? 0 : 1;
+    }
+
+    public static void main(String[] args) throws Exception {
+        int exitCode = ToolRunner.run(new SmallFilesToSequenceFileConverter(), args);
+        System.exit(exitCode);
+    }
 }
