@@ -1,11 +1,9 @@
 package com.nevilon.pubmednlp.core.pdfconverter;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.apache.tika.metadata.Metadata;
@@ -24,20 +22,20 @@ public class ConvertMap extends Mapper<NullWritable, BytesWritable, PdfFile, Nul
 
     private MultipleOutputs mOutput;
 
+    private String path;
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
-        System.out.println("creating");
-        this.filename = ((FileSplit) context.getInputSplit()).getPath().getName();
+        Path absPath =  ((FileSplit) context.getInputSplit()).getPath();
+        this.path = absPath.toString();
+        this.filename = absPath.getName();
         mOutput = new MultipleOutputs(context);
     }
 
 
     public void map(NullWritable key, BytesWritable value, Context context) throws IOException, InterruptedException {
         String text = parse(value.getBytes());
-        //String escapedText = StringEscapeUtils.escapeJava(text);
-        context.write(new PdfFile(filename, text, "some path"), NullWritable.get());
-       // mOutput.write(filename,new PdfFile(filename, text, "some path"), NullWritable.get());
+        context.write(new PdfFile(filename, text, path), NullWritable.get());
     }
 
 

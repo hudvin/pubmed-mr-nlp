@@ -20,24 +20,17 @@ public class PdfConverterJob extends Configured
         Configuration conf = new Configuration();
         Job job = Job.getInstance(conf);
 
-
-//        Job job = JobBuilder.parseInputAndOutput(this, getConf(), args);
-//        if (job == null) {
-//            return -1;
-//        }
-
         job.setJarByClass(PdfConverterJob.class);
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
-
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
+        job.setInputFormatClass(WholeFileInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
 
         job.setMapperClass(ConvertMap.class);
 
-        job.setInputFormatClass(WholeFileInputFormat.class);
-        job.setOutputFormatClass(TextOutputFormat.class);
         job.setNumReduceTasks(0);
 
         FileInputFormat.setInputPaths(job, new Path(args[0]));
