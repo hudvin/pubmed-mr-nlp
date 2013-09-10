@@ -10,6 +10,16 @@ public class Relation {
 
     private String sentence;
 
+    private double confidence;
+
+    public double getConfidence() {
+        return confidence;
+    }
+
+    public void setConfidence(double confidence) {
+        this.confidence = confidence;
+    }
+
     public String getArg1() {
         return arg1;
     }

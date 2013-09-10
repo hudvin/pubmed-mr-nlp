@@ -47,6 +47,7 @@ public class ExtractMapper extends Mapper<LongWritable, Text, Text, NullWritable
             relData.setArg1(arg1);
             relData.setArg2(arg2);
             relData.setRel(rel);
+            relData.setConfidence(conf);
             //relData.setSentence(sentence);
             //fill json
             rels.add(relData);
